@@ -1,7 +1,8 @@
 import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { ITodo } from "../atoms";
+import { ITodo, toDoState } from "../atoms";
 
 const Card = styled.div<{ isDragging: boolean }>`
   background-color: ${(props) =>
@@ -18,9 +19,27 @@ interface IDragabbleCardProps {
   index: number;
 }
 
-function DragabbleCard({ toDoId,toDoText, index }: IDragabbleCardProps) {
+function DragabbleCard({ toDoId, toDoText, index }: IDragabbleCardProps) {
+  const setToDos = useSetRecoilState(toDoState);
+  const onDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+    const id = value;
+    setToDos((toDo) => {
+      const toDoCopy = { ...toDo };
+      const keys = Object.keys(toDoCopy);
+      keys.forEach((key) => {
+        toDoCopy[key] = toDo[key].filter(
+          (toDoCard) => toDoCard.id !== parseInt(id)
+        );
+      });
+      localStorage.setItem("toDo", JSON.stringify(toDoCopy));
+      return toDoCopy;
+    });
+  };
   return (
-    <Draggable draggableId={toDoId+""} index={index}>
+    <Draggable draggableId={toDoId + ""} index={index}>
       {(magic, cardMove) => (
         <Card
           isDragging={cardMove.isDragging}
@@ -29,6 +48,9 @@ function DragabbleCard({ toDoId,toDoText, index }: IDragabbleCardProps) {
           {...magic.draggableProps}
         >
           {toDoText}
+          <button value={toDoId} onClick={onDeleteClick}>
+            X
+          </button>
         </Card>
       )}
     </Draggable>
