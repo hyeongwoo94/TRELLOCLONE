@@ -1,4 +1,4 @@
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { useForm } from "react-hook-form";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
@@ -42,6 +42,53 @@ const Input = styled.input`
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm();
+  const onDragEnd = (info: DropResult) => {
+    console.log(info);
+    const { destination, source, type } = info;
+    if (type === "Board") {
+      if (!destination) return;
+      setToDos((addBoard) => {
+        const add = Object.entries(addBoard);
+        const [temp] = add.splice(source.index, 1);
+        add.splice(destination?.index, 0, temp);
+        const resultList = add.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+        localStorage.setItem("toDo", JSON.stringify(resultList));
+        return resultList;
+      });
+    } else {
+      if (!destination) return;
+      if (destination?.droppableId === source.droppableId) {
+        setToDos((addBoard) => {
+          const add = [...addBoard[source.droppableId]];
+          const taskObj = add[source.index];
+          add.splice(source.index, 1);
+          add.splice(destination?.index, 0, taskObj);
+          const resultList = {
+            ...addBoard,
+            [source.droppableId]: add,
+          };
+          localStorage.setItem("toDo", JSON.stringify(resultList));
+          return resultList;
+        });
+      }
+      if (destination.droppableId !== source.droppableId) {
+        setToDos((addBoard) => {
+          const sourceBoard = [...addBoard[source.droppableId]];
+          const destinationBoard = [...addBoard[destination.droppableId]];
+          const taskObj = sourceBoard[source.index];
+          sourceBoard.splice(source.index, 1);
+          destinationBoard.splice(destination?.index, 0, taskObj);
+          const resultList = {
+            ...addBoard,
+            [source.droppableId]: sourceBoard,
+            [destination?.droppableId]: destinationBoard,
+          };
+          localStorage.setItem("toDo", JSON.stringify(resultList));
+          return resultList;
+        });
+      }
+    }
+  };
   const onSubmit = ({ board }: IToDosState) => {
     setToDos((addBoard) => {
       const add = {
@@ -52,51 +99,6 @@ function App() {
       return add;
     });
     setValue("board", "");
-  };
-  const onDragEnd = (info: DropResult) => {
-    console.log(info);
-    const { destination, draggableId, source } = info;
-    if (!destination) return;
-    if (destination?.droppableId === source.droppableId) {
-      setToDos((oldToDos) => {
-        const boardCopy = [...oldToDos[source.droppableId]];
-        const taskObj = boardCopy[source.index];
-        boardCopy.splice(source.index, 1);
-        boardCopy.splice(destination?.index, 0, taskObj);
-        return {
-          ...oldToDos,
-          [source.droppableId]: boardCopy,
-        };
-      });
-    }
-    if (destination?.droppableId !== source.droppableId) {
-      setToDos((allBoards) => {
-        const sourceBoard = [...allBoards[source.droppableId]];
-        const taskObj = sourceBoard[source.index];
-        const destinationBoard = [...allBoards[destination.droppableId]];
-        sourceBoard.splice(source.index, 1);
-        destinationBoard.splice(destination?.index, 0, taskObj);
-        return {
-          ...allBoards,
-          [source.droppableId]: sourceBoard,
-          [destination?.droppableId]: destinationBoard,
-        };
-      });
-    }
-    // setTodos(oldToDos =>{
-    //   const toDosCopy = [...oldToDos];
-    //   // 1) Delete item on source.index
-    //   // console.log("이동시키고 싶은 아이템의 index은", source.index);
-    //   // console.log(toDosCopy);
-    //   toDosCopy.splice(source.index, 1);
-    //   //console.log("삭제후 남은 아이템들");
-    //   //console.log(toDosCopy);
-    //   // 2) Put back the item on the destination.index
-    //   //console.log("움직였던 아이템의 값은", draggableId, "움직인 위치의 index은 ", destination.index);
-    //   toDosCopy.splice(destination?.index, 0, draggableId);
-    //   //console.log(toDosCopy);
-    //   return toDosCopy;
-    // })
   };
   return (
     <>
@@ -109,11 +111,21 @@ function App() {
           />
         </AddBoard>
         <Wrapper>
-          <Boards>
-            {Object.keys(toDos).map((boardId) => (
-              <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
-            ))}
-          </Boards>
+          <Droppable droppableId="BOARDS" type={"Board"} direction="horizontal">
+            {(magic) => (
+              <Boards ref={magic.innerRef} {...magic.droppableProps}>
+                {Object.keys(toDos).map((boardId, index) => (
+                  <Board
+                    boardId={boardId}
+                    key={boardId}
+                    toDos={toDos[boardId]}
+                    index={index}
+                  />
+                ))}
+                {magic.placeholder}
+              </Boards>
+            )}
+          </Droppable>
         </Wrapper>
       </DragDropContext>
     </>
