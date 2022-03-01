@@ -55,10 +55,12 @@ function Board({ toDos, boardId }: IBoardProps) {
       text: toDo,
     };
     setToDos((allBoards) => {
-      return {
+      const saveDate ={
         ...allBoards,
         [boardId]: [newToDo, ...allBoards[boardId]],
-      };
+      }
+      localStorage.setItem("todo", JSON.stringify(saveDate));
+      return saveDate
     });
     setValue("toDo", ""); 
   };

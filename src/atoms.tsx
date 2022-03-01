@@ -7,14 +7,16 @@ export interface ITodo{
 interface IToSosState{
   [key: string] : ITodo[]
 }
+const localTodo = localStorage.getItem("todo");
+const todoJSON = JSON.parse(localTodo as any);
 
 export const toDoState = atom<IToSosState>({
   key:"toDo",
-  default: {
-    ToDo:[],
-    Doing:[],
-    Done:[]
-  }
+  default: todoJSON || {
+    "TO DO": [],
+    Doing: [],
+    Done: [],
+  },
 })
 
 
