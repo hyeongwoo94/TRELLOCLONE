@@ -47,10 +47,10 @@ interface IForm {
   toDo: string;
 }
 function Board({ toDos, boardId }: IBoardProps) {
-  const setToDos = useSetRecoilState(toDoState)
+  const setToDos = useSetRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
   const onValid = ({ toDo }: IForm) => {
-    const newToDo ={
+    const newToDo = {
       id: Date.now(),
       text: toDo,
     };
@@ -60,20 +60,11 @@ function Board({ toDos, boardId }: IBoardProps) {
         [boardId]: [newToDo, ...allBoards[boardId]],
       };
     });
-    setValue("toDo", "")
+    setValue("toDo", ""); 
   };
-  // const inputRef = useRef<HTMLInputElement>(null);
-  // const onClick = () => {
-  //   inputRef.current?.focus();
-  //   setTimeout(() => {
-  //     inputRef.current?.blur();
-  //   }, 5000);
-  // };
   return (
     <Wrapper>
       <Title>{boardId}</Title>
-      {/* <input ref={inputRef} placeholder="입력하시오" />
-      <button onClick={onClick}>버튼</button> */}
       <Form onSubmit={handleSubmit(onValid)}>
         <input
           {...register("toDo", { required: true })}
@@ -90,7 +81,12 @@ function Board({ toDos, boardId }: IBoardProps) {
             {...magic.droppableProps}
           >
             {toDos.map((toDo, index) => (
-              <DragabbleCard key={toDo.id} index={index} toDoId={toDo.id} toDoText={toDo.text} />
+              <DragabbleCard
+                key={toDo.id}
+                index={index}
+                toDoId={toDo.id}
+                toDoText={toDo.text}
+              />
             ))}
             {magic.placeholder}
           </Area>
