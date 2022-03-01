@@ -13,13 +13,13 @@ const Card = styled.div<{ isDragging: boolean }>`
   box-shadow: ${(props) =>
     props.isDragging ? "0px 2px 5px rgba(0, 0, 0, 0.5)" : "none"};
 `;
-interface IDragabbleCardProps {
+interface IDraggableCardProps {
   toDoId: number;
   toDoText: string;
   index: number;
 }
 
-function DragabbleCard({ toDoId, toDoText, index }: IDragabbleCardProps) {
+function DragabbleCard({ toDoId, toDoText, index }: IDraggableCardProps) {
   const setToDos = useSetRecoilState(toDoState);
   const onDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const {
@@ -39,7 +39,7 @@ function DragabbleCard({ toDoId, toDoText, index }: IDragabbleCardProps) {
     });
   };
   return (
-    <Draggable draggableId={toDoId + ""} index={index}>
+    <Draggable draggableId={toDoId + ""} key={toDoId} index={index}>
       {(magic, cardMove) => (
         <Card
           isDragging={cardMove.isDragging}

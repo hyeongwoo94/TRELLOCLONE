@@ -81,7 +81,7 @@ function Board({ toDos, boardId, index }: IBoardProps) {
     });
   };
   return (
-    <Draggable draggableId={boardId + ""} index={index}>
+    <Draggable draggableId={boardId} index={index}>
       {(magic, snapshot) => (
         <Wrapper
           ref={magic.innerRef}
