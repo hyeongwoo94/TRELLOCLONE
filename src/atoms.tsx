@@ -4,13 +4,13 @@ export interface ITodo{
   text:string;
 }
 
-interface IToSosState{
+export interface IToDosState{
   [key: string] : ITodo[]
 }
 const localTodo = localStorage.getItem("todo");
 const todoJSON = JSON.parse(localTodo as any);
 
-export const toDoState = atom<IToSosState>({
+export const toDoState = atom<IToDosState>({
   key:"toDo",
   default: todoJSON || {
     "TO DO": [],

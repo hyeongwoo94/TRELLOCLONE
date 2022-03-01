@@ -1,7 +1,8 @@
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { useForm } from "react-hook-form";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { toDoState } from "./atoms";
+import { IToDosState, toDoState } from "./atoms";
 import Board from "./Components/Board";
 
 const Wrapper = styled.div`
@@ -19,9 +20,40 @@ const Boards = styled.div`
   gap: 15px;
   grid-template-columns: repeat(3, 1fr);
 `;
+const AddBoard = styled.form`
+  width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+`;
+const Input = styled.input`
+  background: none;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid white;
+  text-align: center;
+  font-size: 18px;
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+`;
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
+  const { register, setValue, handleSubmit } = useForm();
+  const onSubmit = ({ board }: IToDosState) => {
+    setToDos((addBoard) => {
+      const add = {
+        ...addBoard,
+        [board + ""]: [],
+      };
+      localStorage.setItem("todo", JSON.stringify(add));
+      console.log(addBoard);
+      return add;
+    });
+    setValue("board", "");
+  };
   const onDragEnd = (info: DropResult) => {
     console.log(info);
     const { destination, draggableId, source } = info;
@@ -70,6 +102,13 @@ function App() {
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
+        <AddBoard onSubmit={handleSubmit(onSubmit)}>
+          <Input
+            {...register("board", { required: true })}
+            type="text"
+            placeholder="Add Board!"
+          />
+        </AddBoard>
         <Wrapper>
           <Boards>
             {Object.keys(toDos).map((boardId) => (
