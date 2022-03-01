@@ -48,8 +48,7 @@ function App() {
         ...addBoard,
         [board + ""]: [],
       };
-      localStorage.setItem("todo", JSON.stringify(add));
-      console.log(addBoard);
+      localStorage.setItem("toDo", JSON.stringify(add));
       return add;
     });
     setValue("board", "");

@@ -50,25 +50,38 @@ interface IForm {
 function Board({ toDos, boardId }: IBoardProps) {
   const setToDos = useSetRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
+  const deleteBoard = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const {
+      currentTarget: { value },
+    } = event;
+    setToDos((allBoards) => {
+      const toDosBoard = { ...allBoards };
+      delete toDosBoard[value];
+      localStorage.setItem("toDo", JSON.stringify(toDosBoard));
+      return toDosBoard;
+    });
+  };
   const onValid = ({ toDo }: IForm) => {
     const newToDo = {
       id: Date.now(),
       text: toDo,
     };
     setToDos((allBoards) => {
-      const saveDate ={
+      const saveDate = {
         ...allBoards,
         [boardId]: [newToDo, ...allBoards[boardId]],
-      }
-      localStorage.setItem("todo", JSON.stringify(saveDate));
-      return saveDate
+      };
+      localStorage.setItem("toDo", JSON.stringify(saveDate));
+      return saveDate;
     });
-    setValue("toDo", ""); 
+    setValue("toDo", "");
   };
   return (
     <Wrapper>
       <Title>{boardId}</Title>
-
+      <button value={boardId} onClick={deleteBoard}>
+        X
+      </button>
       <Form onSubmit={handleSubmit(onValid)}>
         <input
           {...register("toDo", { required: true })}
@@ -93,7 +106,6 @@ function Board({ toDos, boardId }: IBoardProps) {
               />
             ))}
             {magic.placeholder}
-           
           </Area>
         )}
       </Droppable>
