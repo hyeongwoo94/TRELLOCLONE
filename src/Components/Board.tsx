@@ -35,8 +35,6 @@ const Form = styled.form`
     width: 100%;
   }
 `;
-const EraseBoard = styled.button``;
-
 
 interface IAreaProps {
   isDraggingOver: boolean;
@@ -58,32 +56,19 @@ function Board({ toDos, boardId }: IBoardProps) {
       text: toDo,
     };
     setToDos((allBoards) => {
-      const saveDate = {
+      const saveDate ={
         ...allBoards,
         [boardId]: [newToDo, ...allBoards[boardId]],
-      };
+      }
       localStorage.setItem("todo", JSON.stringify(saveDate));
-      return saveDate;
+      return saveDate
     });
-    setValue("toDo", "");
-  };
-  const onRemove = () => {
-    setToDos((min) => {
-      const eraseBoard = Object.entries(min).filter(
-        (target) => target[0] !== boardId
-      );
-      const EraseResult = eraseBoard.reduce(
-        (r, [k, v]) => ({ ...r, [k]: v }),
-        {}
-      );
-      localStorage.setItem("todo", JSON.stringify(EraseResult));
-      return EraseResult;
-    });
+    setValue("toDo", ""); 
   };
   return (
     <Wrapper>
       <Title>{boardId}</Title>
-      <EraseBoard onClick={onRemove}>보드 X</EraseBoard>
+
       <Form onSubmit={handleSubmit(onValid)}>
         <input
           {...register("toDo", { required: true })}
