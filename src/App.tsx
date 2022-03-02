@@ -38,6 +38,10 @@ const Input = styled.input`
     color: rgba(255, 255, 255, 0.6);
   }
 `;
+interface IBoardsProps {
+  isDraggingOver: boolean;
+  isDraggingFromThis: boolean;
+}
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
@@ -51,11 +55,23 @@ function App() {
         const add = Object.entries(addBoard);
         const [temp] = add.splice(source.index, 1);
         add.splice(destination?.index, 0, temp);
-        const resultList = add.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+        const resultList = Object.fromEntries(add);
         localStorage.setItem("toDo", JSON.stringify(resultList));
         return resultList;
       });
     } else {
+      if (destination === null) {
+        setToDos((addBoard) => {
+          const add = [...addBoard[source.droppableId]];
+          add.splice(source.index, 1);
+          const resultList = {
+            ...addBoard,
+            [source.droppableId]: add,
+          };
+          localStorage.setItem("toDo", JSON.stringify(resultList));
+          return resultList;
+        });
+      }
       if (!destination) return;
       if (destination?.droppableId === source.droppableId) {
         setToDos((addBoard) => {
@@ -112,7 +128,7 @@ function App() {
         </AddBoard>
         <Wrapper>
           <Droppable droppableId="BOARDS" type={"Board"} direction="horizontal">
-            {(magic) => (
+            {(magic, moveInfo) => (
               <Boards ref={magic.innerRef} {...magic.droppableProps}>
                 {Object.keys(toDos).map((boardId, index) => (
                   <Board
@@ -133,26 +149,3 @@ function App() {
 }
 
 export default App;
-
-// import React from "react";
-// import { useRecoilState, useRecoilValue } from "recoil";
-// import {hourSelector, minuteState} from "./atoms"
-
-// function App() {
-//   const [mintue, setMintues] = useRecoilState(minuteState);
-//   const [hours, setHours] = useRecoilState(hourSelector);
-//   const onMinutesChange = (event:React.FormEvent<HTMLInputElement>) => {
-//     setMintues(+event.currentTarget.value);
-//   };
-//   const onHoursChange = (event:React.FormEvent<HTMLInputElement>) => {
-//     setHours(+event.currentTarget.value)
-//   }
-//   return (
-//    <>
-//    <input value={mintue} onChange={onMinutesChange} placeholder="Minutes" type="number" />
-//    <input value={hours} onChange={onHoursChange} placeholder="Hours" type="number" />
-//    </>
-//   );
-// }
-
-// export default App;
