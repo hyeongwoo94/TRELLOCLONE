@@ -13,6 +13,19 @@ const Card = styled.div<{ isDragging: boolean }>`
   box-shadow: ${(props) =>
     props.isDragging ? "0px 2px 5px rgba(0, 0, 0, 0.5)" : "none"};
 `;
+const CardMain = styled.div`
+  display:flex;
+  justify-content: space-between;
+  button{
+    font-weight: bold;
+    border:none;
+    background-color: transparent;
+    &:hover{
+      color: red;
+      cursor: pointer;
+    }
+  }
+`;
 interface IDraggableCardProps {
   toDoId: number;
   toDoText: string;
@@ -47,10 +60,12 @@ function DragabbleCard({ toDoId, toDoText, index }: IDraggableCardProps) {
           {...magic.dragHandleProps}
           {...magic.draggableProps}
         >
+          <CardMain>
           {toDoText}
           <button value={toDoId} onClick={onDeleteClick}>
-            X
+            삭제
           </button>
+          </CardMain>
         </Card>
       )}
     </Draggable>

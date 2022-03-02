@@ -7,41 +7,47 @@ import Board from "./Components/Board";
 
 const Wrapper = styled.div`
   display: flex;
-  max-width: 680px;
+  max-width: 1280px;
   width: 100%;
   margin: 0 auto;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  margin-top: 30px;
 `;
 const Boards = styled.div`
   display: grid;
   width: 100%;
-  gap: 15px;
+  gap: 30px;
   grid-template-columns: repeat(3, 1fr);
 `;
+const Harder = styled.div`
+  width: 100%;
+`;
+
 const AddBoard = styled.form`
-  width: 300px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
+  width: 100%;
+  text-align: center;
 `;
 const Input = styled.input`
-  background: none;
+  width: 15%;
+  margin: 25px 10px;
+  background: whitesmoke;
+  border-radius: 15px;
   outline: none;
   border: none;
-  border-bottom: 1px solid white;
   text-align: center;
-  font-size: 18px;
+  color: black;
+  font-size: 20px;
+  line-height: 40px;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  &:focus {
+    border-color: #64b1d9;
+  }
   &::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: black;
   }
 `;
-interface IBoardsProps {
-  isDraggingOver: boolean;
-  isDraggingFromThis: boolean;
-}
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
@@ -119,13 +125,15 @@ function App() {
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
-        <AddBoard onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            {...register("board", { required: true })}
-            type="text"
-            placeholder="Add Board!"
-          />
-        </AddBoard>
+        <Harder>
+          <AddBoard onSubmit={handleSubmit(onSubmit)}>
+            <Input
+              {...register("board", { required: true })}
+              type="text"
+              placeholder="스티커 추가하기"
+            />
+          </AddBoard>
+        </Harder>
         <Wrapper>
           <Droppable droppableId="BOARDS" type={"Board"} direction="horizontal">
             {(magic, moveInfo) => (
