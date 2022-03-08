@@ -18,7 +18,12 @@ const Boards = styled.div`
   display: grid;
   width: 100%;
   gap: 30px;
+  padding: 0 10px;
   grid-template-columns: repeat(3, 1fr);
+  @media screen and (max-width: 500px) {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 10px;
+  }
 `;
 const Harder = styled.div`
   width: 100%;
@@ -29,7 +34,12 @@ const AddBoard = styled.form`
   text-align: center;
 `;
 const Input = styled.input`
-  width: 15%;
+  @media screen and (max-width: 500px) {
+    width: 90%;
+    margin: 10px auto;
+  }
+  width: 30%;
+  margin-top: 30px;
   margin: 25px 10px;
   background: whitesmoke;
   border-radius: 15px;
